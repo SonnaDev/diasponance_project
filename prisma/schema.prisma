@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Utilisateur {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  nom         String?
+  motDePasse  String
+  paysResidence String  @default("FR")
+  paysOrigine   String  @default("SN")
+  deviseLocale  String  @default("EUR")
+  deviseFamille String  @default("XOF")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  transactions Transaction[]
+  objectifs    Objectif[]
+  transferts   Transfert[]
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  montant     Float
+  devise      String   @default("EUR")
+  type        TypeTransaction
+  categorie   String
+  note        String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  utilisateurId String
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+}
+
+model Objectif {
+  id          String   @id @default(cuid())
+  nom         String
+  montantCible Float
+  montantActuel Float   @default(0)
+  devise      String   @default("EUR")
+  dateLimit   DateTime?
+  atteint     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  utilisateurId String
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+}
+
+model Transfert {
+  id          String   @id @default(cuid())
+  montant     Float
+  deviseEnvoi String   @default("EUR")
+  montantRecu Float?
+  deviseRecu  String   @default("XOF")
+  tauxChange  Float?
+  service     String
+  beneficiaire String?
+  note        String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  utilisateurId String
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+}
+
+enum TypeTransaction {
+  DEPENSE
+  REVENU
+}
