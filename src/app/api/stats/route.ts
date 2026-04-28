@@ -1,20 +1,17 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  const session = await getServerSession()
-
+  const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
     return NextResponse.json({ erreur: 'Non autorisé' }, { status: 401 })
   }
 
   const utilisateur = await prisma.utilisateur.findUnique({
     where: { email: session.user.email },
-    include: {
-      transactions: true,
-      transferts: true,
-    },
+    include: { transactions: true, transferts: true },
   })
 
   if (!utilisateur) {
@@ -39,8 +36,7 @@ export async function GET() {
   const mois = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
   const evolutionMensuelle = mois.map((moisLabel, index) => {
     const transactionsMois = utilisateur.transactions.filter(t => {
-      const date = new Date(t.date)
-      return date.getMonth() === index
+      return new Date(t.date).getMonth() === index
     })
     return {
       mois: moisLabel,
@@ -49,12 +45,5 @@ export async function GET() {
     }
   })
 
-  return NextResponse.json({
-    totalRevenus,
-    totalDepenses,
-    totalTransferts,
-    solde,
-    depensesParCategorie,
-    evolutionMensuelle,
-  })
+  return NextResponse.json({ totalRevenus, totalDepenses, totalTransferts, solde, depensesParCategorie, evolutionMensuelle })
 }

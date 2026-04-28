@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
     return NextResponse.json({ erreur: 'Non autorisé' }, { status: 401 })
   }
@@ -25,15 +26,12 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
     return NextResponse.json({ erreur: 'Non autorisé' }, { status: 401 })
   }
 
-  const {
-    montant, deviseEnvoi, montantRecu,
-    deviseRecu, tauxChange, service, beneficiaire, note
-  } = await req.json()
+  const { montant, deviseEnvoi, montantRecu, deviseRecu, tauxChange, service, beneficiaire, note } = await req.json()
 
   if (!montant || !service) {
     return NextResponse.json(
@@ -68,7 +66,7 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
     return NextResponse.json({ erreur: 'Non autorisé' }, { status: 401 })
   }

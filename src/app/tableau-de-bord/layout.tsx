@@ -9,6 +9,7 @@ const navigation = [
   { label: 'Transactions', href: '/tableau-de-bord/transactions', icone: '↕' },
   { label: 'Transferts', href: '/tableau-de-bord/transferts', icone: '✈' },
   { label: 'Objectifs', href: '/tableau-de-bord/objectifs', icone: '◎' },
+  { label: 'Paramètres', href: '/tableau-de-bord/parametres', icone: '⚙' },
 ]
 
 export default function TableauDeBordLayout({

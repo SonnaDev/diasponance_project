@@ -2,8 +2,9 @@ import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import type { NextAuthOptions } from 'next-auth'
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   pages: { signIn: '/connexion' },
   callbacks: {
@@ -29,12 +30,16 @@ const handler = NextAuth({
           where: { email: credentials.email },
         })
         if (!utilisateur) return null
-        const valide = await bcrypt.compare(credentials.motDePasse, utilisateur.motDePasse)
+        const valide = await bcrypt.compare(
+          credentials.motDePasse,
+          utilisateur.motDePasse
+        )
         if (!valide) return null
         return { id: utilisateur.id, email: utilisateur.email, name: utilisateur.nom }
       },
     }),
   ],
-})
+}
 
+const handler = NextAuth(authOptions)
 export { handler as GET, handler as POST }
