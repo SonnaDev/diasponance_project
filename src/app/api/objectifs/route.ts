@@ -3,60 +3,54 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
+export async function PUT(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
     return NextResponse.json({ erreur: 'Non autorisé' }, { status: 401 })
   }
 
-  const utilisateur = await prisma.utilisateur.findUnique({
-    where: { email: session.user.email },
+  const params = await context.params
+  const { montant } = await req.json()
+
+  const objectif = await prisma.objectif.findUnique({
+    where: { id: params.id },
   })
 
-  if (!utilisateur) {
-    return NextResponse.json({ erreur: 'Utilisateur non trouvé' }, { status: 404 })
+  if (!objectif) {
+    return NextResponse.json({ erreur: 'Objectif non trouvé' }, { status: 404 })
   }
 
-  const objectifs = await prisma.objectif.findMany({
-    where: { utilisateurId: utilisateur.id },
-    orderBy: { createdAt: 'desc' },
-  })
+  const nouveauMontant = objectif.montantActuel + parseFloat(montant)
+  const atteint = nouveauMontant >= objectif.montantCible
 
-  return NextResponse.json(objectifs)
-}
-
-export async function POST(req: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.email) {
-    return NextResponse.json({ erreur: 'Non autorisé' }, { status: 401 })
-  }
-
-  const { nom, montantCible, devise, dateLimit } = await req.json()
-
-  if (!nom || !montantCible) {
-    return NextResponse.json(
-      { erreur: 'Nom et montant cible sont obligatoires' },
-      { status: 400 }
-    )
-  }
-
-  const utilisateur = await prisma.utilisateur.findUnique({
-    where: { email: session.user.email },
-  })
-
-  if (!utilisateur) {
-    return NextResponse.json({ erreur: 'Utilisateur non trouvé' }, { status: 404 })
-  }
-
-  const objectif = await prisma.objectif.create({
+  const objectifMisAJour = await prisma.objectif.update({
+    where: { id: params.id },
     data: {
-      nom,
-      montantCible: parseFloat(montantCible),
-      devise: devise ?? 'EUR',
-      dateLimit: dateLimit ? new Date(dateLimit) : null,
-      utilisateurId: utilisateur.id,
+      montantActuel: Math.min(nouveauMontant, objectif.montantCible),
+      atteint,
     },
   })
 
-  return NextResponse.json(objectif, { status: 201 })
+  return NextResponse.json(objectifMisAJour)
+}
+
+export async function DELETE(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) {
+    return NextResponse.json({ erreur: 'Non autorisé' }, { status: 401 })
+  }
+
+  const params = await context.params
+
+  await prisma.objectif.delete({
+    where: { id: params.id },
+  })
+
+  return NextResponse.json({ message: 'Objectif supprimé' })
 }
