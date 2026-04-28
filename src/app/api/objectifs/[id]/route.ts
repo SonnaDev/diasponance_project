@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
     return NextResponse.json({ erreur: 'Non autorisé' }, { status: 401 })
   }
 
+  const params = await context.params
   const { montant } = await req.json()
 
   const objectif = await prisma.objectif.findUnique({
@@ -37,12 +39,14 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
     return NextResponse.json({ erreur: 'Non autorisé' }, { status: 401 })
   }
+
+  const params = await context.params
 
   await prisma.objectif.delete({
     where: { id: params.id },
