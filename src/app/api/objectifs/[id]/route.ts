@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function PUT(
   req: Request,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -17,7 +17,8 @@ export async function PUT(
       )
     }
 
-    const { id } = context.params
+    // Attendre que params soit résolu
+    const { id } = await context.params
     const { montant } = await req.json()
 
     const objectif = await prisma.objectif.findUnique({
@@ -56,6 +57,7 @@ export async function PUT(
 
     return NextResponse.json(objectifMisAJour)
   } catch (error) {
+    console.error('Erreur PUT:', error)
     return NextResponse.json(
       { erreur: 'Erreur serveur' },
       { status: 500 }
@@ -65,7 +67,7 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -77,7 +79,8 @@ export async function DELETE(
       )
     }
 
-    const { id } = context.params
+    // Attendre que params soit résolu
+    const { id } = await context.params
 
     await prisma.objectif.delete({
       where: { id },
@@ -87,6 +90,7 @@ export async function DELETE(
       message: 'Objectif supprimé',
     })
   } catch (error) {
+    console.error('Erreur DELETE:', error)
     return NextResponse.json(
       { erreur: 'Erreur serveur' },
       { status: 500 }
