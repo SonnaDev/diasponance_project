@@ -17,7 +17,6 @@ export default function ObjectifsPage() {
   const [chargement, setChargement] = useState(true)
   const [afficherFormulaire, setAfficherFormulaire] = useState(false)
   const [contribution, setContribution] = useState<{ id: string; montant: string } | null>(null)
-
   const [nom, setNom] = useState('')
   const [montantCible, setMontantCible] = useState('')
   const [devise, setDevise] = useState('EUR')
@@ -25,9 +24,7 @@ export default function ObjectifsPage() {
   const [erreur, setErreur] = useState('')
   const [succes, setSucces] = useState('')
 
-  useEffect(() => {
-    chargerObjectifs()
-  }, [])
+  useEffect(() => { chargerObjectifs() }, [])
 
   async function chargerObjectifs() {
     const res = await fetch('/api/objectifs')
@@ -39,24 +36,15 @@ export default function ObjectifsPage() {
   async function creerObjectif(e: React.FormEvent) {
     e.preventDefault()
     setErreur('')
-
     const res = await fetch('/api/objectifs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nom, montantCible, devise, dateLimit }),
     })
-
     const data = await res.json()
-
-    if (!res.ok) {
-      setErreur(data.erreur)
-      return
-    }
-
-    setSucces('Objectif créé avec succès!')
-    setNom('')
-    setMontantCible('')
-    setDateLimit('')
+    if (!res.ok) { setErreur(data.erreur); return }
+    setSucces('Objectif créé!')
+    setNom(''); setMontantCible(''); setDateLimit('')
     setAfficherFormulaire(false)
     chargerObjectifs()
     setTimeout(() => setSucces(''), 3000)
@@ -68,11 +56,7 @@ export default function ObjectifsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ montant: parseFloat(montant) }),
     })
-
-    if (res.ok) {
-      setContribution(null)
-      chargerObjectifs()
-    }
+    if (res.ok) { setContribution(null); chargerObjectifs() }
   }
 
   async function supprimer(id: string) {
@@ -81,199 +65,181 @@ export default function ObjectifsPage() {
     chargerObjectifs()
   }
 
-  const progression = (actuel: number, cible: number) =>
-    Math.min(Math.round((actuel / cible) * 100), 100)
-
-  const joursRestants = (dateLimit: string | null) => {
-    if (!dateLimit) return null
-    const diff = new Date(dateLimit).getTime() - new Date().getTime()
-    return Math.ceil(diff / (1000 * 60 * 60 * 24))
+  const pct = (actuel: number, cible: number) => Math.min(Math.round((actuel / cible) * 100), 100)
+  const joursRestants = (dl: string | null) => {
+    if (!dl) return null
+    return Math.ceil((new Date(dl).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
   }
 
+  const atteints = objectifs.filter(o => o.atteint).length
+  const enCours = objectifs.filter(o => !o.atteint).length
+
   return (
-    <main className="max-w-4xl mx-auto p-8">
-      <div className="flex items-center justify-between mb-6">
+    <main style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
         <div>
-          <h2 className="text-lg font-medium">Objectifs d'épargne</h2>
-          <p className="text-sm text-gray-400">Suivez vos projets financiers</p>
+          <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#1f1235', margin: 0 }}>
+            Objectifs d'épargne 🎯
+          </h2>
+          <p style={{ color: '#7c3aed', fontSize: '14px', marginTop: '4px' }}>
+            {atteints} atteint{atteints > 1 ? 's' : ''} · {enCours} en cours
+          </p>
         </div>
-        <button
-          onClick={() => setAfficherFormulaire(!afficherFormulaire)}
-          className="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700"
-        >
+        <button onClick={() => setAfficherFormulaire(!afficherFormulaire)} className="btn-primary">
           + Nouvel objectif
         </button>
       </div>
 
       {succes && (
-        <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg mb-4">
-          {succes}
-        </div>
+        <div style={{
+          background: '#f0fdf4', border: '1px solid #bbf7d0',
+          borderRadius: '10px', padding: '12px 16px',
+          fontSize: '13px', color: '#16a34a', marginBottom: '16px'
+        }}>✓ {succes}</div>
       )}
 
-      {/* Formulaire création */}
+      {/* Formulaire */}
       {afficherFormulaire && (
-        <div className="bg-white border rounded-xl p-6 mb-6">
-          <h3 className="text-sm font-medium mb-4">Créer un nouvel objectif</h3>
-          <form onSubmit={creerObjectif} className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <label className="text-sm text-gray-500 block mb-1">Nom de l'objectif</label>
-              <input
-                type="text"
-                value={nom}
-                onChange={e => setNom(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-                placeholder="Ex: Billet retour Dakar, Urgence famille..."
-                required
-              />
+        <div style={{
+          background: 'white', borderRadius: '16px',
+          border: '1px solid #ede9fe', padding: '1.5rem',
+          marginBottom: '24px', boxShadow: '0 4px 16px rgba(124,58,237,0.08)'
+        }}>
+          <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#1f1235', marginBottom: '16px' }}>
+            Créer un nouvel objectif
+          </h3>
+          <form onSubmit={creerObjectif}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Nom de l'objectif</label>
+                <input type="text" value={nom} onChange={e => setNom(e.target.value)}
+                  className="input" placeholder="Ex: Billet retour Dakar, Urgence famille..." required />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Montant cible</label>
+                <input type="number" value={montantCible} onChange={e => setMontantCible(e.target.value)}
+                  className="input" placeholder="500" required />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Devise</label>
+                <select value={devise} onChange={e => setDevise(e.target.value)} className="input">
+                  <option value="EUR">EUR — Euro</option>
+                  <option value="XOF">XOF — Franc CFA</option>
+                  <option value="USD">USD — Dollar</option>
+                </select>
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Date limite (optionnel)</label>
+                <input type="date" value={dateLimit} onChange={e => setDateLimit(e.target.value)} className="input" />
+              </div>
             </div>
-            <div>
-              <label className="text-sm text-gray-500 block mb-1">Montant cible</label>
-              <input
-                type="number"
-                value={montantCible}
-                onChange={e => setMontantCible(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-                placeholder="500"
-                required
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-500 block mb-1">Devise</label>
-              <select
-                value={devise}
-                onChange={e => setDevise(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-              >
-                <option value="EUR">EUR — Euro</option>
-                <option value="XOF">XOF — Franc CFA</option>
-                <option value="USD">USD — Dollar</option>
-              </select>
-            </div>
-            <div className="col-span-2">
-              <label className="text-sm text-gray-500 block mb-1">Date limite (optionnel)</label>
-              <input
-                type="date"
-                value={dateLimit}
-                onChange={e => setDateLimit(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-              />
-            </div>
-            {erreur && <p className="col-span-2 text-red-500 text-sm">{erreur}</p>}
-            <div className="col-span-2 flex gap-3">
-              <button
-                type="submit"
-                className="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700"
-              >
-                Créer l'objectif
-              </button>
-              <button
-                type="button"
-                onClick={() => setAfficherFormulaire(false)}
-                className="text-sm text-gray-500 border px-4 py-2 rounded-lg hover:bg-gray-50"
-              >
-                Annuler
-              </button>
+            {erreur && <p style={{ color: '#dc2626', fontSize: '13px', marginBottom: '12px' }}>{erreur}</p>}
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button type="submit" className="btn-primary">Créer l'objectif</button>
+              <button type="button" className="btn-secondary" onClick={() => setAfficherFormulaire(false)}>Annuler</button>
             </div>
           </form>
         </div>
       )}
 
-      {/* Liste des objectifs */}
+      {/* Liste */}
       {chargement ? (
-        <p className="text-gray-400 text-sm">Chargement...</p>
+        <p style={{ color: '#9ca3af', fontSize: '14px' }}>Chargement...</p>
       ) : objectifs.length === 0 ? (
-        <div className="bg-white border rounded-xl p-12 text-center">
-          <p className="text-gray-400 text-sm mb-2">Aucun objectif pour l'instant</p>
-          <p className="text-gray-300 text-xs">Créez votre premier objectif d'épargne</p>
+        <div style={{
+          background: 'white', borderRadius: '16px', border: '1px solid #ede9fe',
+          padding: '4rem', textAlign: 'center'
+        }}>
+          <p style={{ fontSize: '40px', marginBottom: '12px' }}>🎯</p>
+          <p style={{ color: '#9ca3af', fontSize: '14px' }}>Aucun objectif pour l'instant</p>
+          <p style={{ color: '#c4b5fd', fontSize: '13px' }}>Créez votre premier objectif d'épargne</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {objectifs.map(objectif => {
-            const pct = progression(objectif.montantActuel, objectif.montantCible)
-            const jours = joursRestants(objectif.dateLimit)
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {objectifs.map(o => {
+            const p = pct(o.montantActuel, o.montantCible)
+            const jours = joursRestants(o.dateLimit)
             return (
-              <div
-                key={objectif.id}
-                className={`bg-white border rounded-xl p-6 ${objectif.atteint ? 'border-green-200 bg-green-50' : ''}`}
-              >
-                <div className="flex items-start justify-between mb-4">
+              <div key={o.id} style={{
+                background: 'white', borderRadius: '16px',
+                border: o.atteint ? '1px solid #bbf7d0' : '1px solid #ede9fe',
+                padding: '1.5rem',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                // background: o.atteint ? '#f0fdf4' : 'white',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                   <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-medium text-gray-900">{objectif.nom}</h3>
-                      {objectif.atteint && (
-                        <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                          ✓ Atteint!
-                        </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1f1235', margin: 0 }}>{o.nom}</h3>
+                      {o.atteint && (
+                        <span className="badge-success">✓ Atteint!</span>
                       )}
                     </div>
                     {jours !== null && (
-                      <p className={`text-xs mt-0.5 ${jours < 0 ? 'text-red-400' : jours < 30 ? 'text-orange-400' : 'text-gray-400'}`}>
-                        {jours < 0 ? `Expiré il y a ${Math.abs(jours)} jours` : `${jours} jours restants`}
+                      <p style={{
+                        fontSize: '12px', marginTop: '4px',
+                        color: jours < 0 ? '#dc2626' : jours < 30 ? '#ea580c' : '#9ca3af'
+                      }}>
+                        {jours < 0 ? `⚠️ Expiré il y a ${Math.abs(jours)} jours` : `⏰ ${jours} jours restants`}
                       </p>
                     )}
                   </div>
-                  <button
-                    onClick={() => supprimer(objectif.id)}
-                    className="text-gray-300 hover:text-red-400 text-sm"
-                  >
-                    ✕
-                  </button>
+                  <button onClick={() => supprimer(o.id)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#d1d5db', fontSize: '18px' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#d1d5db')}
+                  >✕</button>
                 </div>
 
-                {/* Barre de progression */}
-                <div className="mb-3">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-600 font-medium">
-                      {objectif.montantActuel.toFixed(2)} {objectif.devise}
+                {/* Progress */}
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '18px', fontWeight: '700', color: o.atteint ? '#16a34a' : '#7c3aed' }}>
+                      {o.montantActuel.toFixed(2)} {o.devise}
                     </span>
-                    <span className="text-gray-400">
-                      {objectif.montantCible.toFixed(2)} {objectif.devise}
+                    <span style={{ fontSize: '13px', color: '#9ca3af' }}>
+                      sur {o.montantCible.toFixed(2)} {o.devise}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full transition-all ${objectif.atteint ? 'bg-green-500' : 'bg-gray-900'}`}
-                      style={{ width: `${pct}%` }}
-                    />
+                  <div style={{ background: '#f3f0ff', borderRadius: '99px', height: '8px', overflow: 'hidden' }}>
+                    <div style={{
+                      height: '8px', borderRadius: '99px',
+                      width: `${p}%`,
+                      background: o.atteint
+                        ? 'linear-gradient(90deg, #16a34a, #22c55e)'
+                        : 'linear-gradient(90deg, #7c3aed, #a78bfa)',
+                      transition: 'width 0.5s ease',
+                    }} />
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">{pct}% atteint</p>
+                  <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '6px' }}>{p}% atteint</p>
                 </div>
 
-                {/* Contribuer */}
-                {!objectif.atteint && (
-                  <div>
-                    {contribution?.id === objectif.id ? (
-                      <div className="flex gap-2">
-                        <input
-                          type="number"
-                          value={contribution.montant}
-                          onChange={e => setContribution({ id: objectif.id, montant: e.target.value })}
-                          className="border rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-gray-200 w-32"
-                          placeholder="Montant"
-                        />
-                        <button
-                          onClick={() => contribuer(objectif.id, contribution.montant)}
-                          className="bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-gray-700"
-                        >
-                          Confirmer
-                        </button>
-                        <button
-                          onClick={() => setContribution(null)}
-                          className="text-sm text-gray-400 border px-3 py-1.5 rounded-lg"
-                        >
-                          Annuler
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setContribution({ id: objectif.id, montant: '' })}
-                        className="text-sm text-gray-600 border px-3 py-1.5 rounded-lg hover:bg-gray-50"
-                      >
-                        + Ajouter une contribution
+                {/* Contribution */}
+                {!o.atteint && (
+                  contribution?.id === o.id ? (
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        type="number"
+                        value={contribution.montant}
+                        onChange={e => setContribution({ id: o.id, montant: e.target.value })}
+                        className="input" placeholder="Montant"
+                        style={{ maxWidth: '140px' }}
+                      />
+                      <button onClick={() => contribuer(o.id, contribution.montant)} className="btn-primary">
+                        Confirmer
                       </button>
-                    )}
-                  </div>
+                      <button onClick={() => setContribution(null)} className="btn-secondary">
+                        Annuler
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setContribution({ id: o.id, montant: '' })}
+                      className="btn-secondary"
+                    >
+                      + Ajouter une contribution
+                    </button>
+                  )
                 )}
               </div>
             )

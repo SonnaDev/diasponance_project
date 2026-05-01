@@ -17,11 +17,19 @@ type Transfert = {
 
 const SERVICES = ['Wave', 'Orange Money', 'Western Union', 'MoneyGram', 'Wizall', 'Autre']
 
+const SERVICE_COLORS: Record<string, string> = {
+  'Wave': '#2563eb',
+  'Orange Money': '#ea580c',
+  'Western Union': '#ca8a04',
+  'MoneyGram': '#7c3aed',
+  'Wizall': '#16a34a',
+  'Autre': '#6b7280',
+}
+
 export default function TransfertsPage() {
   const [transferts, setTransferts] = useState<Transfert[]>([])
   const [chargement, setChargement] = useState(true)
   const [afficherFormulaire, setAfficherFormulaire] = useState(false)
-
   const [montant, setMontant] = useState('')
   const [deviseEnvoi, setDeviseEnvoi] = useState('EUR')
   const [deviseRecu, setDeviseRecu] = useState('XOF')
@@ -32,9 +40,7 @@ export default function TransfertsPage() {
   const [erreur, setErreur] = useState('')
   const [succes, setSucces] = useState('')
 
-  useEffect(() => {
-    chargerTransferts()
-  }, [])
+  useEffect(() => { chargerTransferts() }, [])
 
   async function chargerTransferts() {
     const res = await fetch('/api/transferts')
@@ -50,34 +56,15 @@ export default function TransfertsPage() {
   async function envoyerTransfert(e: React.FormEvent) {
     e.preventDefault()
     setErreur('')
-
     const res = await fetch('/api/transferts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        montant,
-        deviseEnvoi,
-        montantRecu,
-        deviseRecu,
-        tauxChange,
-        service,
-        beneficiaire,
-        note,
-      }),
+      body: JSON.stringify({ montant, deviseEnvoi, montantRecu, deviseRecu, tauxChange, service, beneficiaire, note }),
     })
-
     const data = await res.json()
-
-    if (!res.ok) {
-      setErreur(data.erreur)
-      return
-    }
-
+    if (!res.ok) { setErreur(data.erreur); return }
     setSucces('Transfert enregistré!')
-    setMontant('')
-    setBeneficiaire('')
-    setNote('')
-    setService('')
+    setMontant(''); setBeneficiaire(''); setNote(''); setService('')
     setAfficherFormulaire(false)
     chargerTransferts()
     setTimeout(() => setSucces(''), 3000)
@@ -93,232 +80,190 @@ export default function TransfertsPage() {
   const totalRecu = transferts.reduce((acc, t) => acc + (t.montantRecu ?? 0), 0)
 
   return (
-    <main className="max-w-4xl mx-auto p-8">
-      <div className="flex items-center justify-between mb-6">
+    <main style={{ padding: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
         <div>
-          <h2 className="text-lg font-medium">Transferts familiaux</h2>
-          <p className="text-sm text-gray-400">Envois d'argent vers la famille</p>
+          <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#1f1235', margin: 0 }}>
+            Transferts familiaux ✈️
+          </h2>
+          <p style={{ color: '#7c3aed', fontSize: '14px', marginTop: '4px' }}>
+            Envois d'argent vers la famille
+          </p>
         </div>
-        <button
-          onClick={() => setAfficherFormulaire(!afficherFormulaire)}
-          className="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700"
-        >
+        <button onClick={() => setAfficherFormulaire(!afficherFormulaire)} className="btn-primary">
           + Nouveau transfert
         </button>
       </div>
 
       {succes && (
-        <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg mb-4">
-          {succes}
-        </div>
+        <div style={{
+          background: '#f0fdf4', border: '1px solid #bbf7d0',
+          borderRadius: '10px', padding: '12px 16px',
+          fontSize: '13px', color: '#16a34a', marginBottom: '16px'
+        }}>✓ {succes}</div>
       )}
 
       {/* Formulaire */}
       {afficherFormulaire && (
-        <div className="bg-white border rounded-xl p-6 mb-6">
-          <h3 className="text-sm font-medium mb-4">Enregistrer un transfert</h3>
-          <form onSubmit={envoyerTransfert} className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm text-gray-500 block mb-1">Montant envoyé</label>
-              <input
-                type="number"
-                value={montant}
-                onChange={e => setMontant(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-                placeholder="0.00"
-                step="0.01"
-                required
-              />
+        <div style={{
+          background: 'white', borderRadius: '16px',
+          border: '1px solid #ede9fe', padding: '1.5rem',
+          marginBottom: '24px', boxShadow: '0 4px 16px rgba(124,58,237,0.08)'
+        }}>
+          <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#1f1235', marginBottom: '16px' }}>
+            Enregistrer un transfert
+          </h3>
+          <form onSubmit={envoyerTransfert}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Montant envoyé</label>
+                <input type="number" value={montant} onChange={e => setMontant(e.target.value)}
+                  className="input" placeholder="0.00" step="0.01" required />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Devise d'envoi</label>
+                <select value={deviseEnvoi} onChange={e => setDeviseEnvoi(e.target.value)} className="input">
+                  <option value="EUR">EUR — Euro</option>
+                  <option value="USD">USD — Dollar</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Devise reçue</label>
+                <select value={deviseRecu} onChange={e => setDeviseRecu(e.target.value)} className="input">
+                  <option value="XOF">XOF — Franc CFA</option>
+                  <option value="GNF">GNF — Franc guinéen</option>
+                  <option value="MAD">MAD — Dirham marocain</option>
+                  <option value="XAF">XAF — Franc CFA central</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Taux de change</label>
+                <input type="number" value={tauxChange} onChange={e => setTauxChange(e.target.value)} className="input" placeholder="656" />
+              </div>
             </div>
 
-            <div>
-              <label className="text-sm text-gray-500 block mb-1">Devise d'envoi</label>
-              <select
-                value={deviseEnvoi}
-                onChange={e => setDeviseEnvoi(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-              >
-                <option value="EUR">EUR — Euro</option>
-                <option value="USD">USD — Dollar</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-500 block mb-1">Devise reçue</label>
-              <select
-                value={deviseRecu}
-                onChange={e => setDeviseRecu(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-              >
-                <option value="XOF">XOF — Franc CFA</option>
-                <option value="GNF">GNF — Franc guinéen</option>
-                <option value="MAD">MAD — Dirham marocain</option>
-                <option value="XAF">XAF — Franc CFA Afrique centrale</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-500 block mb-1">Taux de change</label>
-              <input
-                type="number"
-                value={tauxChange}
-                onChange={e => setTauxChange(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-                placeholder="656"
-              />
-            </div>
-
-            {/* Aperçu montant reçu */}
             {montantRecu && (
-              <div className="col-span-2 bg-blue-50 border border-blue-100 rounded-lg px-4 py-3">
-                <p className="text-sm text-blue-700">
-                  La famille recevra environ{' '}
-                  <span className="font-medium">
-                    {parseInt(montantRecu).toLocaleString('fr-FR')} {deviseRecu}
-                  </span>
+              <div style={{
+                background: '#f5f3ff', border: '1px solid #ddd6fe',
+                borderRadius: '10px', padding: '12px 16px', marginBottom: '12px'
+              }}>
+                <p style={{ fontSize: '13px', color: '#7c3aed', margin: 0 }}>
+                  💰 La famille recevra environ{' '}
+                  <strong>{parseInt(montantRecu).toLocaleString('fr-FR')} {deviseRecu}</strong>
                 </p>
               </div>
             )}
 
-            <div>
-              <label className="text-sm text-gray-500 block mb-1">Service utilisé</label>
-              <select
-                value={service}
-                onChange={e => setService(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-                required
-              >
-                <option value="">Choisir...</option>
-                {SERVICES.map(s => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Service utilisé</label>
+                <select value={service} onChange={e => setService(e.target.value)} className="input" required>
+                  <option value="">Choisir...</option>
+                  {SERVICES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Bénéficiaire</label>
+                <input type="text" value={beneficiaire} onChange={e => setBeneficiaire(e.target.value)}
+                  className="input" placeholder="Maman, Papa..." />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px', fontWeight: '500' }}>Note (optionnel)</label>
+                <input type="text" value={note} onChange={e => setNote(e.target.value)}
+                  className="input" placeholder="Raison du transfert..." />
+              </div>
             </div>
 
-            <div>
-              <label className="text-sm text-gray-500 block mb-1">Bénéficiaire</label>
-              <input
-                type="text"
-                value={beneficiaire}
-                onChange={e => setBeneficiaire(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-                placeholder="Maman, Papa..."
-              />
-            </div>
-
-            <div className="col-span-2">
-              <label className="text-sm text-gray-500 block mb-1">Note (optionnel)</label>
-              <input
-                type="text"
-                value={note}
-                onChange={e => setNote(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-                placeholder="Raison du transfert..."
-              />
-            </div>
-
-            {erreur && <p className="col-span-2 text-red-500 text-sm">{erreur}</p>}
-
-            <div className="col-span-2 flex gap-3">
-              <button
-                type="submit"
-                className="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700"
-              >
-                Enregistrer le transfert
-              </button>
-              <button
-                type="button"
-                onClick={() => setAfficherFormulaire(false)}
-                className="text-sm text-gray-500 border px-4 py-2 rounded-lg hover:bg-gray-50"
-              >
-                Annuler
-              </button>
+            {erreur && <p style={{ color: '#dc2626', fontSize: '13px', marginBottom: '12px' }}>{erreur}</p>}
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button type="submit" className="btn-primary">Enregistrer</button>
+              <button type="button" className="btn-secondary" onClick={() => setAfficherFormulaire(false)}>Annuler</button>
             </div>
           </form>
         </div>
       )}
 
       {/* Résumé */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white border rounded-xl p-4">
-          <p className="text-xs text-gray-400 mb-1">Total envoyé</p>
-          <p className="text-lg font-medium text-blue-600">
-            {totalEnvoye.toFixed(2)} EUR
-          </p>
-        </div>
-        <div className="bg-white border rounded-xl p-4">
-          <p className="text-xs text-gray-400 mb-1">Total reçu famille</p>
-          <p className="text-lg font-medium text-gray-900">
-            {totalRecu.toLocaleString('fr-FR')} XOF
-          </p>
-        </div>
-        <div className="bg-white border rounded-xl p-4">
-          <p className="text-xs text-gray-400 mb-1">Nombre de transferts</p>
-          <p className="text-lg font-medium text-gray-900">{transferts.length}</p>
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
+        {[
+          { label: 'Total envoyé', valeur: `${totalEnvoye.toFixed(2)} EUR`, icon: '💸', color: '#7c3aed' },
+          { label: 'Total reçu famille', valeur: `${totalRecu.toLocaleString('fr-FR')} XOF`, icon: '🏠', color: '#16a34a' },
+          { label: 'Nombre de transferts', valeur: `${transferts.length}`, icon: '📊', color: '#1f1235' },
+        ].map((c, i) => (
+          <div key={i} style={{
+            background: 'white', borderRadius: '14px',
+            border: '1px solid #ede9fe', padding: '1.25rem',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <p style={{ fontSize: '12px', color: '#9ca3af', margin: '0 0 6px' }}>{c.label}</p>
+                <p style={{ fontSize: '18px', fontWeight: '700', color: c.color, margin: 0 }}>{c.valeur}</p>
+              </div>
+              <span style={{ fontSize: '28px' }}>{c.icon}</span>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Liste transferts */}
-      <div className="bg-white rounded-xl border overflow-hidden">
-        <table className="w-full">
+      {/* Table */}
+      <div style={{
+        background: 'white', borderRadius: '16px',
+        border: '1px solid #ede9fe', overflow: 'hidden',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+      }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr className="border-b bg-gray-50">
-              <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Bénéficiaire</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Service</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Envoyé</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Reçu</th>
-              <th className="px-6 py-3"></th>
+            <tr style={{ background: '#f5f3ff', borderBottom: '1px solid #ede9fe' }}>
+              {['Date', 'Bénéficiaire', 'Service', 'Envoyé', 'Reçu', ''].map((h, i) => (
+                <th key={i} style={{
+                  padding: '12px 20px', textAlign: 'left',
+                  fontSize: '11px', fontWeight: '600', color: '#7c3aed',
+                  textTransform: 'uppercase', letterSpacing: '0.05em'
+                }}>{h}</th>
+              ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {chargement ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-sm text-gray-400">
-                  Chargement...
-                </td>
-              </tr>
+              <tr><td colSpan={6} style={{ padding: '3rem', textAlign: 'center', color: '#9ca3af', fontSize: '14px' }}>Chargement...</td></tr>
             ) : transferts.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-sm text-gray-400">
-                  Aucun transfert enregistré
+              <tr><td colSpan={6} style={{ padding: '3rem', textAlign: 'center', color: '#9ca3af', fontSize: '14px' }}>Aucun transfert enregistré</td></tr>
+            ) : transferts.map((t, i) => (
+              <tr key={t.id}
+                style={{ borderBottom: i < transferts.length - 1 ? '1px solid #f5f3ff' : 'none' }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#faf9ff')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'white')}
+              >
+                <td style={{ padding: '14px 20px', fontSize: '13px', color: '#6b7280' }}>
+                  {new Date(t.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </td>
+                <td style={{ padding: '14px 20px', fontSize: '14px', fontWeight: '600', color: '#1f1235' }}>
+                  {t.beneficiaire ?? '—'}
+                </td>
+                <td style={{ padding: '14px 20px' }}>
+                  <span style={{
+                    background: `${SERVICE_COLORS[t.service] ?? '#6b7280'}15`,
+                    color: SERVICE_COLORS[t.service] ?? '#6b7280',
+                    padding: '3px 10px', borderRadius: '99px',
+                    fontSize: '12px', fontWeight: '500'
+                  }}>{t.service}</span>
+                </td>
+                <td style={{ padding: '14px 20px', fontSize: '14px', fontWeight: '600', color: '#7c3aed' }}>
+                  {t.montant.toFixed(2)} {t.deviseEnvoi}
+                </td>
+                <td style={{ padding: '14px 20px', fontSize: '13px', color: '#16a34a', fontWeight: '500' }}>
+                  {t.montantRecu ? `${t.montantRecu.toLocaleString('fr-FR')} ${t.deviseRecu}` : '—'}
+                </td>
+                <td style={{ padding: '14px 20px', textAlign: 'right' }}>
+                  <button onClick={() => supprimer(t.id)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#d1d5db', fontSize: '16px' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#d1d5db')}
+                  >✕</button>
                 </td>
               </tr>
-            ) : (
-              transferts.map(t => (
-                <tr key={t.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {new Date(t.date).toLocaleDateString('fr-FR', {
-                      day: 'numeric', month: 'short', year: 'numeric'
-                    })}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    {t.beneficiaire ?? '—'}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                      {t.service}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-blue-600">
-                    {t.montant.toFixed(2)} {t.deviseEnvoi}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {t.montantRecu
-                      ? `${t.montantRecu.toLocaleString('fr-FR')} ${t.deviseRecu}`
-                      : '—'}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => supprimer(t.id)}
-                      className="text-gray-300 hover:text-red-400 text-sm"
-                    >
-                      ✕
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>
