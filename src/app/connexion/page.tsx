@@ -38,53 +38,118 @@ export default function ConnexionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white border rounded-xl p-8 w-full max-w-sm">
-        <div className="mb-6">
-          <h1 className="text-xl font-medium">Connexion</h1>
-          <p className="text-sm text-gray-400 mt-1">Bienvenue sur DiasporaFinance</p>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #8b5cf6 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '1rem',
+    }}>
+      <div style={{ width: '100%', maxWidth: '400px' }}>
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div style={{
+            width: '64px', height: '64px', borderRadius: '20px',
+            background: 'rgba(255,255,255,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '32px', margin: '0 auto 12px',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.3)',
+          }}>💰</div>
+          <h1 style={{ color: 'white', fontSize: '24px', fontWeight: '700', margin: 0 }}>
+            DiasporaFinance
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginTop: '4px' }}>
+            Gérez vos finances depuis l'étranger
+          </p>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
-            <label className="text-sm text-gray-500 block mb-1">Adresse email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-              placeholder="vous@exemple.com"
-              required
-            />
+
+        {/* Card */}
+        <div style={{
+          background: 'white',
+          borderRadius: '24px',
+          padding: '2rem',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+        }}>
+          <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#1f1235', marginBottom: '4px' }}>
+            Connexion
+          </h2>
+          <p style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '1.5rem' }}>
+            Bienvenue! Entrez vos identifiants.
+          </p>
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <label style={{ fontSize: '13px', color: '#6b7280', display: 'block', marginBottom: '6px', fontWeight: '500' }}>
+                Adresse email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="input"
+                placeholder="vous@exemple.com"
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '13px', color: '#6b7280', display: 'block', marginBottom: '6px', fontWeight: '500' }}>
+                Mot de passe
+              </label>
+              <input
+                type="password"
+                value={motDePasse}
+                onChange={e => setMotDePasse(e.target.value)}
+                className="input"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            {erreur && (
+              <div style={{
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: '8px',
+                padding: '10px 12px',
+                fontSize: '13px',
+                color: '#dc2626',
+              }}>
+                {erreur}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={chargement}
+              className="btn-primary"
+              style={{ width: '100%', padding: '0.75rem' }}
+            >
+              {chargement ? 'Connexion...' : 'Se connecter →'}
+            </button>
+          </form>
+
+          {/* Compte démo */}
+          <div style={{
+            marginTop: '16px',
+            background: '#f5f3ff',
+            borderRadius: '10px',
+            padding: '10px 14px',
+            textAlign: 'center',
+          }}>
+            <p style={{ fontSize: '12px', color: '#7c3aed', margin: 0 }}>
+              Compte démo: <strong>demo@diasporafinance.com</strong> / <strong>demo123</strong>
+            </p>
           </div>
-          <div>
-            <label className="text-sm text-gray-500 block mb-1">Mot de passe</label>
-            <input
-              type="password"
-              value={motDePasse}
-              onChange={e => setMotDePasse(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-          {erreur && <p className="text-red-500 text-sm">{erreur}</p>}
-          <button
-            type="submit"
-            disabled={chargement}
-            className="bg-gray-900 text-white rounded-lg py-2 text-sm font-medium hover:bg-gray-700 disabled:opacity-50"
-          >
-            {chargement ? 'Connexion...' : 'Se connecter'}
-          </button>
-        </form>
-        <p className="text-sm text-gray-400 text-center mt-4">
-          Pas encore de compte?{' '}
-          <Link href="/inscription" className="text-gray-900 font-medium hover:underline">
-            S'inscrire
-          </Link>
-        </p>
-        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-          <p className="text-xs text-gray-400 text-center">Compte démo:</p>
-          <p className="text-xs text-gray-600 text-center">demo@diasporafinance.com / demo123</p>
+
+          <p style={{ textAlign: 'center', fontSize: '13px', color: '#9ca3af', marginTop: '16px' }}>
+            Pas encore de compte?{' '}
+            <Link href="/inscription" style={{ color: '#7c3aed', fontWeight: '600', textDecoration: 'none' }}>
+              S'inscrire gratuitement
+            </Link>
+          </p>
         </div>
       </div>
     </div>
