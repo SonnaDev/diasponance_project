@@ -1,5 +1,6 @@
 'use client'
-
+import ConvertisseurDevises from '@/app/components/ConvertisseurDevises'
+import Notifications from '@/app/components/Notifications'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import {
@@ -97,13 +98,16 @@ export default function TableauDeBord() {
   return (
     <main style={{ padding: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#1f1235', margin: 0 }}>
-          Bonjour, {prenom} 👋
-        </h2>
-        <p style={{ color: '#7c3aed', fontSize: '14px', marginTop: '4px' }}>
-          Voici un résumé de vos finances
-        </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+        <div>
+          <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#1f1235', margin: 0 }}>
+            Bonjour, {prenom} 👋
+          </h2>
+          <p style={{ color: '#7c3aed', fontSize: '14px', marginTop: '4px' }}>
+            Voici un résumé de vos finances
+          </p>
+        </div>
+        <Notifications />
       </div>
 
       {/* Cartes */}
@@ -148,12 +152,12 @@ export default function TableauDeBord() {
             <AreaChart data={stats?.evolutionMensuelle}>
               <defs>
                 <linearGradient id="colorRevenus" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2}/>
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorDepenses" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#dc2626" stopOpacity={0.15}/>
-                  <stop offset="95%" stopColor="#dc2626" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#dc2626" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#dc2626" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f0ff" />
@@ -201,6 +205,10 @@ export default function TableauDeBord() {
             </PieChart>
           </ResponsiveContainer>
         </div>
+      </div>
+      {/* Convertisseur */}
+      <div style={{ marginTop: '16px' }}>
+        <ConvertisseurDevises />
       </div>
     </main>
   )
