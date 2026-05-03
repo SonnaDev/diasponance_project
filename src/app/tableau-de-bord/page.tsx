@@ -1,4 +1,6 @@
 'use client'
+
+import RapportPDF from '@/app/components/RapportPDF'
 import ConvertisseurDevises from '@/app/components/ConvertisseurDevises'
 import Notifications from '@/app/components/Notifications'
 import { useEffect, useState } from 'react'
@@ -107,7 +109,10 @@ export default function TableauDeBord() {
             Voici un résumé de vos finances
           </p>
         </div>
-        <Notifications />
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <RapportPDF />
+          <Notifications />
+        </div>
       </div>
 
       {/* Cartes */}

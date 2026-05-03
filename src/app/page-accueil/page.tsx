@@ -112,8 +112,7 @@ export default function Home() {
           <p style={{ fontSize: '16px', color: '#6b7280', lineHeight: '1.7', marginBottom: '2rem' }}>
             Vous vivez en Europe, vous gagnez en euros, mais votre cœur est en Afrique.
             Vous jongler entre payer votre loyer à Paris, envoyer de l'argent à maman à Dakar,
-            et essayer d'épargner pour le futur.{' '}
-            <strong style={{ color: '#7c3aed' }}>DiasporaFinance comprend votre réalité.</strong>
+            et essayer d'épargner pour le futur. <strong style={{ color: '#7c3aed' }}>DiasporaFinance comprend votre réalité.</strong>
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
             {[
@@ -171,7 +170,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Devises */}
+      {/* Devises supportées */}
       <section style={{ padding: '3rem 2rem', background: '#f5f3ff', textAlign: 'center' }}>
         <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#1f1235', marginBottom: '1.5rem' }}>
           Devises supportées 💱
