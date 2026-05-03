@@ -77,7 +77,7 @@ export default function Home() {
             fontSize: '18px', color: 'rgba(255,255,255,0.8)',
             lineHeight: '1.6', marginBottom: '32px',
           }}>
-            Suivez vos dépenses en EUR, envoyez de l'argent à la famille en XOF,
+            Suivez vos dépenses, envoyez de l'argent à la famille,
             et atteignez vos objectifs d'épargne. Tout en français, tout simplement.
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -110,9 +110,8 @@ export default function Home() {
             La réalité des Africains à l'étranger 🌍
           </h2>
           <p style={{ fontSize: '16px', color: '#6b7280', lineHeight: '1.7', marginBottom: '2rem' }}>
-            Vous vivez en Europe, vous gagnez en euros, mais votre cœur est en Afrique.
-            Vous jongler entre payer votre loyer à Paris, envoyer de l'argent à maman à Dakar,
-            et essayer d'épargner pour le futur. <strong style={{ color: '#7c3aed' }}>DiasporaFinance comprend votre réalité.</strong>
+            Vous vivez à l'étranger, vous gagnez de l'argent et vous avez du mal à traquer vos dépenses, ceci est un problème majeur que rencontrent beaucoup d'expatriés. Entre loyers et aides aux familles il faut essayer
+            d'épargner pour le futur. <strong style={{ color: '#7c3aed' }}>DiasporaFinance comprend votre réalité.</strong>
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
             {[
@@ -205,7 +204,7 @@ export default function Home() {
           Prêt à prendre le contrôle de vos finances?
         </h2>
         <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.8)', marginBottom: '32px' }}>
-          Rejoignez des milliers d'Africains qui gèrent leurs finances avec DiasporaFinance
+          Rejoignez des milliers d'Africains qui suivent chaque mouvement de leurs finances avec DiasporaFinance
         </p>
         <Link href="/inscription" style={{
           padding: '16px 40px', borderRadius: '14px',
