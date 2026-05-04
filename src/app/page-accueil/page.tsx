@@ -77,8 +77,8 @@ export default function Home() {
             fontSize: '18px', color: 'rgba(255,255,255,0.8)',
             lineHeight: '1.6', marginBottom: '32px',
           }}>
-            Suivez vos dépenses, envoyez de l'argent à la famille,
-            et atteignez vos objectifs d'épargne. Tout en français, tout simplement.
+            Suivez vos dépenses, envoyez de l'argent à votre famille,
+            et atteignez tout simplement vos objectifs d'épargne.
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/inscription" style={{

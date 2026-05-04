@@ -58,10 +58,10 @@ export default function ConnexionPage() {
             border: '1px solid rgba(255,255,255,0.3)',
           }}>💰</div>
           <h1 style={{ color: 'white', fontSize: '24px', fontWeight: '700', margin: 0 }}>
-            DiasporaFinance
+            Diasponance
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginTop: '4px' }}>
-            Gérez vos finances depuis l'étranger
+            Traquez vos dépenses en un click
           </p>
         </div>
 

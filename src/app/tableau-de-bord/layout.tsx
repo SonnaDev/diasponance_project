@@ -46,8 +46,8 @@ export default function TableauDeBordLayout({
               fontSize: '18px'
             }}>💰</div>
             <div>
-              <p style={{ color: 'white', fontWeight: '600', fontSize: '15px', margin: 0 }}>DiasporaFinance</p>
-              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', margin: 0 }}>Gérez vos finances</p>
+              <p style={{ color: 'white', fontWeight: '600', fontSize: '15px', margin: 0 }}>Diasponance</p>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', margin: 0 }}>Gérez vos dépenses</p>
             </div>
           </div>
         </div>
