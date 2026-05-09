@@ -1,75 +1,8 @@
+
 'use client'
 
 import Link from 'next/link'
-
-const articles = [
-  {
-    slug: 'envoyer-argent-afrique',
-    emoji: '✈️',
-    categorie: 'Transferts',
-    titre: "Comment envoyer de l'argent en Afrique sans perdre sur le taux de change",
-    resume: 'Comparatif des meilleures solutions: Wave, Orange Money, Western Union, Wise. On analyse les frais, les taux et les délais pour vous aider à choisir.',
-    date: '15 avril 2026',
-    lecture: '5 min',
-    color: '#ede9fe',
-    textColor: '#7c3aed',
-  },
-  {
-    slug: 'budget-diaspora',
-    emoji: '💰',
-    categorie: 'Budget',
-    titre: 'La règle 50/30/20 adaptée à la diaspora africaine',
-    resume: 'Comment gérer son budget quand on a des obligations familiales en Afrique? Nous adaptons la célèbre règle budgétaire à notre réalité.',
-    date: '8 avril 2026',
-    lecture: '7 min',
-    color: '#dcfce7',
-    textColor: '#16a34a',
-  },
-  {
-    slug: 'taux-eur-xof',
-    emoji: '💱',
-    categorie: 'Devises',
-    titre: 'EUR/XOF: tout comprendre sur le Franc CFA',
-    resume: "Histoire, stabilité, avantages et inconvénients du Franc CFA pour la diaspora. Ce que vous devez savoir avant d'envoyer de l'argent.",
-    date: '1 avril 2026',
-    lecture: '6 min',
-    color: '#fef9c3',
-    textColor: '#ca8a04',
-  },
-  {
-    slug: 'epargne-diaspora',
-    emoji: '🎯',
-    categorie: 'Épargne',
-    titre: "Épargner depuis l'étranger: stratégies pour la diaspora africaine",
-    resume: "Comment mettre de l'argent de côté tout en soutenant sa famille? Nos conseils pratiques pour trouver l'équilibre et construire son avenir.",
-    date: '25 mars 2026',
-    lecture: '8 min',
-    color: '#fee2e2',
-    textColor: '#dc2626',
-  },
-  {
-    slug: 'wave-vs-orange-money',
-    emoji: '📱',
-    categorie: 'Comparatif',
-    titre: 'Wave vs Orange Money vs Western Union: lequel choisir en 2026?',
-    resume: "Analyse complète des trois principales solutions de transfert d'argent vers l'Afrique. Frais, rapidité, disponibilité — on compare tout.",
-    date: '18 mars 2026',
-    lecture: '10 min',
-    color: '#e0f2fe',
-    textColor: '#0369a1',
-  },
-  {
-    slug: 'impots-expatrie',
-    emoji: '📋',
-    categorie: 'Fiscalité',
-    titre: 'Impôts en France: ce que la diaspora africaine doit savoir',
-    resume: 'Résidence fiscale, déclaration des revenus étrangers, déductions possibles. Un guide pratique pour les Africains vivant en France.',
-    date: '10 mars 2026',
-    lecture: '9 min',
-    color: '#f3e8ff',
-    textColor: '#7c3aed',
-  },
-]
+import { articles } from './data'
 
 export default function BlogPage() {
   return (
@@ -85,7 +18,7 @@ export default function BlogPage() {
         </Link>
       </nav>
 
-      {/* Hero Section */}
+      {/* Hero */}
       <section style={{ background: 'linear-gradient(135deg, #4c1d95, #7c3aed)', padding: '4rem 2rem', textAlign: 'center' }}>
         <h1 style={{ fontSize: '40px', fontWeight: '800', color: 'white', margin: '0 0 16px' }}>
           Blog DiasporaFinance 📝
@@ -136,7 +69,7 @@ export default function BlogPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
           {articles.slice(1).map((article, i) => (
             <Link key={i} href={`/blog/${article.slug}`} style={{ textDecoration: 'none' }}>
-              <div 
+              <div
                 style={{
                   background: '#faf9ff', borderRadius: '16px',
                   border: '1px solid #ede9fe', padding: '1.25rem',
@@ -188,19 +121,15 @@ export default function BlogPage() {
             Recevez nos conseils financiers directement dans votre boîte mail
           </p>
           <div style={{ display: 'flex', gap: '10px', maxWidth: '400px', margin: '0 auto' }}>
-            <input 
-              type="email" 
-              placeholder="votre@email.com" 
-              style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} 
+            <input
+              type="email"
+              placeholder="votre@email.com"
+              style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ddd6fe', outline: 'none' }}
             />
-            <button style={{ 
-              padding: '10px 20px', 
-              borderRadius: '8px', 
-              background: '#7c3aed', 
-              color: 'white', 
-              border: 'none', 
-              cursor: 'pointer',
-              fontWeight: '600'
+            <button style={{
+              padding: '10px 20px', borderRadius: '8px',
+              background: 'linear-gradient(135deg, #7c3aed, #8b5cf6)',
+              color: 'white', border: 'none', cursor: 'pointer', fontWeight: '600'
             }}>
               S'abonner
             </button>
